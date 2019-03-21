@@ -240,7 +240,7 @@ footer{
     border-radius: 4px;
     padding-left: 3%;
     margin-top: 1em;
-    margin-bottom: 0px;
+    margin-bottom: 10px;
  }
  .margin-warning{
     padding:0px;
@@ -258,7 +258,7 @@ footer{
     text-align: center;
  }
  .avatar-img{
-    display: inline;
+    /* display: inline; */
     margin-left: 0%;
     margin-top: 3%;
     margin-bottom: 3%;
@@ -268,19 +268,19 @@ footer{
     margin-left: 2%;
  }
  .avatar-like{
-    display: inline;
+    /* display: inline; */
     background-color: #343a40;
     border-style: none;
     background-size: cover;
     background-repeat: no-repeat;
     width: 9%;
     height: 2em;
-    margin-left: 48%;
+    margin-left: 4%;
     padding-top: 1em;
     background-image: url(../assets/img/like.png);
 }
  .avatar-eliminar{
-    display: inline;
+    /* display: inline; */
     margin-left: 62%;
     border: none;
     background-color: #343a40;
@@ -311,4 +311,27 @@ footer{
  }
  .style-publicar:hover{
      opacity:.8;
+ }
+ .avatar-editar{
+    margin-left: 32%;
+    background-image: url(../assets/img/edit.png);
+    background-color: #343a40;
+    border-style: none;
+    background-size: cover;
+    background-repeat: no-repeat;
+    width: 9%;
+    height: 2em;
+
+ }
+ .avatar-like-editar{
+    margin-left: 31%;
+ }
+ .number-likes{
+    margin-left: 73%;
+    padding: 0px;
+    margin-top: px;
+    position: relative;
+    margin-top: -2em;
+    margin-bottom: .5em;
+    font-size: .9em;
  }

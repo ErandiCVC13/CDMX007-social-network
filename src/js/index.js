@@ -8,8 +8,14 @@ window.controlador = {
     const buttonSignIn = document.getElementById("button-sign-in-new");
     const modalWarning = document.getElementById("modal-warning");
     const modalInvalidEmail = document.getElementById("modal-invalid-email");
-    const nombre = document.getElementById("name")
+    const errorRegistro = document.getElementById("error-reg");
+    const nombre = document.getElementById("name");
+    const botonCerrar = document.getElementById("button-comeback")
     var db = firebase.firestore();
+    botonCerrar.addEventListener("click", () => {
+      window.location.hash = '#/';
+
+    })
 
     buttonSignIn.addEventListener("click", () => {
       let signInValue = signIn.value;
@@ -24,44 +30,39 @@ window.controlador = {
             displayName: name,
 
             photoURL: "assets/img/alien.png"
-          }).then(function() {
+          }).then(function () {
 
             // Update successful.
           }).catch(function (error) {
+            console.log(error.message)
             // An error happened.
           });
           verification()
-            // }).then(function() {
-            //   let user = firebase.auth().currentUser;
-            // firebase.firestore().collection('posts').doc(user.uid).set({
-            //     id: user.uid,
-            //     name: name,
-            //     email: user.email,
-            //     photo: user.photoURL,
-            //     })
+
             .catch(function (error) {
               var errorMessage = error.message;
               alert(errorMessage);
               modalInvalidEmail.innerHTML = ` <div class="alert alert-warning" role="alert">
                                           <p> ${errorMessage} </p></div>`;
             });
-        });
+        }).catch(function (error) {
+          var errorMessage = error.message;
+          errorRegistro.innerHTML = ` <div class="alert alert-warning" role="alert">
+              <p> ${errorMessage} </p></div>`;
+
+        })
     })
 
     const verification = () => {
       var user = firebase.auth().currentUser;
 
       user.sendEmailVerification().then(function () {
-        // Email sent.
         modalWarning.innerHTML = ` <div class="alert alert-warning" role="alert">
         <p>Se te ha enviado un correo de verificacion de Usuario</p></div>`;
-
-
       }).then(function () {
         setTimeout(function () {
           window.location.hash = '#/';
         }, 3000);
-
       }).catch(function (error) {
         alert("error");
       });
@@ -75,8 +76,6 @@ window.controlador = {
         db.collection("posts").add({
             name: addForm.elements.userId.value,
             email: addForm.elements.email.value,
-            mujer: addForm.elements.mujer.value,
-            hombre: addForm.elements.hombre.value,
 
           })
           .then((docRef) => {
@@ -128,43 +127,29 @@ window.controlador = {
       const provider = new firebase.auth.FacebookAuthProvider();
 
       firebase.auth().signInWithRedirect(provider).then(function (result) {}).catch(function (error) {
-        // Handle Errors here.
         var errorCode = error.code;
         var errorMessage = error.message;
         alert(errorCode);
         alert(errorMessage);
-        // The email of the user's account used.
         var email = error.email;
         alert(email);
-        // The firebase.auth.AuthCredential type that was used.
         var credential = error.credential;
         alert(credential)
-        // ...
       });
     });
 
     buttonSignInGit.addEventListener("click", () => {
       var provider = new firebase.auth.GithubAuthProvider();
 
-      firebase.auth().signInWithRedirect(provider).then(function (result) {
-        // This gives you a GitHub Access Token. You can use it to access the GitHub API.
-        var token = result.credential.accessToken;
-        // The signed-in user info.
-        var user = result.user;
-        // ...
-      }).catch(function (error) {
-        // Handle Errors here.
+      firebase.auth().signInWithRedirect(provider).then(function (result) {}).catch(function (error) {
         var errorCode = error.code;
         var errorMessage = error.message;
         console.log(errorCode);
         console.log(errorMessage);
-        // The email of the user's account used.
         var email = error.email;
         console.log(email);
-        // The firebase.auth.AuthCredential type that was used.
         var credential = error.credential;
         console.log(credential)
-        // ...
       });
     });
 
@@ -174,23 +159,20 @@ window.controlador = {
 
       firebase.auth().signInWithRedirect(googleProvider)
         .catch(function (error) {
-          // Handle Errors here.
           var errorCode = error.code;
           var errorMessage = error.message;
           alert(errorCode);
           alert(errorMessage);
-          // The email of the user's account used.
           var email = error.email;
           alert(email);
-          // The firebase.auth.AuthCredential type that was used.
           var credential = error.credential;
           alert(credential)
-          // ...
         });
 
     })
     const state = () => {
       firebase.auth().onAuthStateChanged(function (user) {
+
         if (user) {
           showUser(user)
         }
@@ -232,30 +214,14 @@ window.controlador = {
     }
   },
 
-  muro: () => {
-    var db = firebase.firestore();
-    const emailUser = document.getElementById("emailUser");
-    const emailUserNew = emailUser.textContent
 
-    db.collection("posts").where("email", "==", emailUserNew).get().then((querySnapshot) => {
-      const container = document.getElementById("contenido");
-      container.innerHTML = "";
-
-      querySnapshot.forEach((doc) => {
-        container.innerHTML += `user: ${doc.data().userId} | time: ${doc.data().email} | ${doc.data().mujer}</br>`;
-      });
-    });
-  },
 
 
   posteos: () => {
 
     var db = firebase.firestore();
-
     //Agregar comentarios
     var posteo = document.getElementById("publicar");
-
-
     posteo.addEventListener("click", () => {
       // var nombre = document.getElementById('nombre').value;
       const user = firebase.auth().currentUser;
@@ -264,9 +230,9 @@ window.controlador = {
       const nameUser = user.displayName;
       const emailUser = user.email;
       var comentario = document.getElementById('comentario').value;
-      let likes = 0
+
       if (comentario == "") {
-        alert("debes agregar un comentario")
+        alert("Debes agregar un COMENTARIO!!")
 
 
       } else {
@@ -274,35 +240,21 @@ window.controlador = {
           photo: photoUser,
           autor: nameUser,
           mensaje: comentario,
-          email:emailUser,
+          email: emailUser,
           like: 0,
-          // const comentario: comentario,
+          date: firebase.firestore.FieldValue.serverTimestamp(),
 
-          // })
-          // .then(function (docRef) {
-          //     console.log("Document written with ID: ", docRef.id);
-          //     document.getElementById('nombre').value ="";
-          //     document.getElementById('comentario').value="";
-
-          // })
-          // .catch(function (error) {
-          //     console.error("Error adding document: ", error);
-          // });
         })
-
       }
+
     })
-
-
-
 
 
     //leer info
     var muro = document.getElementById('muro');
-
-
-    db.collection("publicaciones").onSnapshot((querySnapshot) => {
+    db.collection("publicaciones").orderBy('date', 'desc').onSnapshot((querySnapshot) => {
       muro.innerHTML = '';
+
       querySnapshot.forEach((doc) => {
 
         const user = firebase.auth().currentUser;
@@ -312,30 +264,28 @@ window.controlador = {
         if (mailUser === doc.data().email) {
           muro.innerHTML += `
         <div class="container-pub">
-
         <div class="alinear">
           <img src="${doc.data().photo}" class="avatar avatar-img">
           <p class="avatar-autor">${doc.data().autor}</p>
-          <button id= "${doc.id}"  class="tablasEditar avatar-editar" ><u>Edt</u></button>
+          <button id= "${doc.id}"  class="tablasEditar avatar-editar" ><u></u></button>
           <button id= "${doc.id}"  class="tablas avatar-like" data-like=${doc.data().like} ></button>
-          
+          <p class="number-likes" >${doc.data().like}</p>
           </div>
           
-          <textarea class="textarea"id= "${doc.id}" name="textarea" rows="10" cols="50" disabled="true">${doc.data().mensaje}</textarea>
+          <textarea class="textarea"id= "txt-${doc.id}" name="textarea" rows="10" cols="50" disabled="true">${doc.data().mensaje}</textarea>
           <button id= "${doc.id}"  class="tablasEliminar avatar-eliminar" ><u>Eliminar</u></button> 
-          
+          <p id = "guardar-${doc.id}"></p>
         </div>
         `
         } else {
           muro.innerHTML += `
           <div class="container-pub">
-
           <div class="alinear">
             <img src="${doc.data().photo}" class="avatar avatar-img">
             <p class="avatar-autor">${doc.data().autor}</p>
             
-            <button id= "${doc.id}"  class="tablas avatar-like" data-like=${doc.data().like} ></button>
-            
+            <button id= "${doc.id}"  class="tablas avatar-like avatar-like-editar" data-like=${doc.data().like} ></button>
+            <p class="number-likes" >${doc.data().like}</p>
             </div>
             
             <textarea class="textarea"id= "${doc.id}" name="textarea" rows="10" cols="50" disabled="true">${doc.data().mensaje}</textarea>
@@ -349,17 +299,15 @@ window.controlador = {
 
 
       const tablas = document.getElementsByClassName("tablas");
-
-
       for (let i = 0; i < tablas.length; i++) {
         // let liker = parseInt(tablas[i].value)
         tablas[i].addEventListener("click", (e) => {
 
           let id = tablas[i].id;
-
           let likeit = parseInt(e.target.dataset.like)
           likeit++;
           console.log(likeit)
+
 
           var sumar = db.collection("publicaciones").doc(id);
           return sumar.update({
@@ -368,7 +316,6 @@ window.controlador = {
               console.log("Document successfully updated!");
             })
             .catch(function (error) {
-              // The document probably doesn't exist.
               console.error("Error updating document: ", error);
             });
 
@@ -382,12 +329,12 @@ window.controlador = {
 
         tablasEliminar[i].addEventListener('click', () => {
 
-          if (confirm("¿Estas seguro de eliminar este mensaje?") == true) {
+          if (confirm("¿Estas seguro de ELIMINAR este mensaje?") == true) {
 
             let id = tablasEliminar[i].id
 
             db.collection("publicaciones").doc(id).delete().then(function () {
-              
+
               console.log("Document successfully deleted!");
             }).catch(function (error) {
               console.error("Error removing document: ", error);
@@ -398,55 +345,46 @@ window.controlador = {
       }
 
       const tablasEditar = document.getElementsByClassName('tablasEditar')
+      
       for (let i = 0; i < tablasEditar.length; i++) {
 
         tablasEditar[i].addEventListener('click', () => {
           if (confirm("¿Estas seguro de editar este mensaje?") == true) {
+            let id = tablasEditar[i].id;
 
-            let id = tablasEditar[i].id
-            
-            var publiEditada = db.collection("publicaciones").doc(id);
+            document.getElementById("txt-" + id).disabled = false;
 
-           const habilitaTtx= document.getElementById("txt").disabled= false;
-            const msjEditado = habilitaTtx.value;
+            const guardar = document.getElementById("guardar-"+id);
+            guardar.innerHTML = `<button id= "guardarbtn"  class="avatar-eliminar" ><u>Guardar</u></button> `;
 
+            guardar.addEventListener("click", () => {
 
-            return publiEditada.update({
-                mensaje: msjEditado
-              })
-              .then(function () {
-                console.log("Document successfully updated!");
-                document.getElementById("txt").disabled= true;
-              })
-              .catch(function (error) {
-                // The document probably doesn't exist.
-                console.error("Error updating document: ", error);
-              });
+              const msjEditado = document.getElementById("txt-" + id).value;
+              
+              if (msjEditado == "") {
+                alert("Debes agregar un COMENTARIO!!");
+        
+              }else{
+              var publiEditada = db.collection("publicaciones").doc(id);
+              
+              return publiEditada.update({
+                  mensaje: msjEditado
 
+                })
+                .then(function () {
+                  console.log("Document successfully updated!");
+                  document.getElementById("txt-" + id).disabled = true;
+                  guardar.innerHTML = "";
+                })
+                .catch(function (error) {
+                  // The document probably doesn't exist.
+                  console.error("Error updating document: ", error);
+                });
+              }
+            })
           }
         })
       }
-
-
-
-
-
     });
-
-
-
-    // const emailUser = document.getElementById("emailUser");
-    //   const emailUserNew = emailUser.textContent
-
-    //   db.collection("posts").where("email", "==", emailUserNew).get().then((querySnapshot) => {
-    //     const container = document.getElementById("contenido");
-    //     container.innerHTML = "";
-
-    //     querySnapshot.forEach((doc) => {
-    //       container.innerHTML += `user: ${doc.data().userId} | time: ${doc.data().email} | ${doc.data().mujer}</br>`;
-    //     });
-    //   });
   }
-
-
 }
